@@ -2,7 +2,7 @@
 /*####
 #
 #	Name: PHx (Placeholders Xtended)
-#	Version: 2.2.1
+#	Version: 2.2.2
 #	Modified by Nick to include external files
 #	Modified by Anton Kuzmin for using of modx snippets cache
 #	Modified by Temus (temus3@gmail.com)
@@ -18,7 +18,7 @@ class PHxParser {
 	function PHxParser($debug=0,$maxpass=50) {
 		global $modx;
 		$this->name = "PHx";
-		$this->version = "2.2.1";
+		$this->version = "2.2.2";
 		$this->user["mgrid"] = intval(isset($_SESSION['mgrInternalKey']) ? $_SESSION['mgrInternalKey'] : 0);
 		$this->user["usrid"] = intval(isset($_SESSION['webInternalKey']) ? $_SESSION['webInternalKey'] : 0);
 		$this->user["id"] = ($this->user["usrid"] > 0 ) ? (-$this->user["usrid"]) : $this->user["mgrid"];
@@ -280,7 +280,7 @@ class PHxParser {
 					case "reverse": case "strrev": $output = $this->strrev($output); break;
 					case "wordwrap": // default: 70
 						$wrapat = intval($modifier_value[$i]) ? intval($modifier_value[$i]) : 70;
-						$output = preg_replace("~(\b\w+\b)~e","wordwrap('\\1',\$wrapat,' ',1)",$output);
+						$output = preg_replace("~([^\s]{" .$wrapat. "})(?=[^\s])~u","$1 ",$output);
 						break;
 					case "limit": // default: 100
 						$limit = intval($modifier_value[$i]) ? intval($modifier_value[$i]) : 100;
@@ -407,7 +407,7 @@ class PHxParser {
 	// Returns the specified field from the user record
 	// positive userid = manager, negative integer = webuser
 	function ModUser($userid,$field) {
-	 global $modx;
+		global $modx;
 		if (!array_key_exists($userid, $this->cache["ui"])) {
 			if (intval($userid) < 0) {
 				$user = $modx->getWebUserInfo(-($userid));
@@ -423,7 +423,7 @@ class PHxParser {
 	 
 	// Returns true if the user id is in one the specified webgroups
 	function isMemberOfWebGroupByUserId($userid=0,$groupNames=array()) {
-	 global $modx;
+		global $modx;
 		// if $groupNames is not an array return false
 		if(!is_array($groupNames)) return false;
 		// if the user id is a negative number make it positive
@@ -446,7 +446,7 @@ class PHxParser {
 	 
 	// Returns the value of a PHx/MODx placeholder.
 	function getPHxVariable($name) {
-	 global $modx;
+		global $modx;
 		// Check if this variable is created by PHx 
 		if (array_key_exists($name, $this->placeholders)) {
 			// Return the value from PHx
@@ -464,7 +464,7 @@ class PHxParser {
 	
 	//mbstring
 	function substr($str, $s, $l = null) {
-   global $modx;
+		global $modx;
 		if (function_exists('mb_substr')) return mb_substr($str, $s, $l, $modx->config['modx_charset']);
 		return substr($str, $s, $l);
 	}
